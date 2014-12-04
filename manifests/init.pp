@@ -181,8 +181,11 @@ class rsyslog (
         '11' : {
           $sysconfig_erb = 'sysconfig.suse11.erb'
         }
+        '12' : {
+          $sysconfig_erb = 'sysconfig.suse12.erb'
+        }
         default: {
-          fail("rsyslog supports Suse like systems with major release 10 and 11, and you have ${::lsbmajdistrelease}")
+          fail("rsyslog supports Suse like systems with major release 10, 11, and 12 and you have ${::lsbmajdistrelease}")
         }
       }
     }

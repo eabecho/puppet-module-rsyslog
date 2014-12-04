@@ -402,6 +402,7 @@ describe 'rsyslog' do
     'debian7'   => { :kernel => 'Linux',   :osfamily => 'Debian',  :release => '7',    :logrotate_present => true },
     'suse10'    => { :kernel => 'Linux',   :osfamily => 'Suse',    :release => '10',   :logrotate_present => true },
     'suse11'    => { :kernel => 'Linux',   :osfamily => 'Suse',    :release => '11',   :logrotate_present => true },
+    'suse12'    => { :kernel => 'Linux',   :osfamily => 'Suse',    :release => '12',   :logrotate_present => true },
     'solaris10' => { :kernel => 'Solaris', :osfamily => 'Solaris', :release => '5.10', :logrotate_present => false },
     'solaris11' => { :kernel => 'Solaris', :osfamily => 'Solaris', :release => '5.11', :logrotate_present => false },
   }
@@ -718,6 +719,37 @@ describe 'rsyslog' do
         it { should contain_file('rsyslog_sysconfig').with_content(/^RSYSLOGD_PARAMS=""$/) }
       end
     end
+
+    context 'on Suse 12' do
+      let :facts do
+        {
+          :kernel            => 'Linux',
+          :osfamily          => 'Suse',
+          :lsbmajdistrelease => '12',
+        }
+      end
+
+      context 'with default params' do
+        it {
+          should contain_file('rsyslog_sysconfig').with({
+            'path'    => '/etc/sysconfig/syslog',
+            'owner'   => 'root',
+            'group'   => 'root',
+            'mode'    => '0644',
+            'require' => 'Package[rsyslog]',
+            'notify'  => 'Service[rsyslog_daemon]',
+          })
+        }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^KERNEL_LOGLEVEL=1$/) }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^SYSLOGD_PARAMS=""$/) }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^KLOGD_PARAMS="-x"$/) }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^SYSLOG_DAEMON="rsyslogd"$/) }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^SYSLOG_NG_PARAMS=""$/) }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^RSYSLOGD_NATIVE_VERSION="5"$/) }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^RSYSLOGD_COMPAT_VERSION=""$/) }
+        it { should contain_file('rsyslog_sysconfig').with_content(/^RSYSLOGD_PARAMS=""$/) }
+      end
+    end
   end
 
   describe 'rsyslog_d_dir' do
@@ -972,6 +1004,7 @@ describe 'rsyslog' do
       'suse9'     => { :kernel => 'Linux',   :osfamily => 'Suse',    :release => '9',    :support => 'unsupported', },
       'suse10'    => { :kernel => 'Linux',   :osfamily => 'Suse',    :release => '10',   :support => 'supported', },
       'suse11'    => { :kernel => 'Linux',   :osfamily => 'Suse',    :release => '11',   :support => 'supported', },
+      'suse12'    => { :kernel => 'Linux',   :osfamily => 'Suse',    :release => '12',   :support => 'supported', },
       'solaris9'  => { :kernel => 'Solaris', :osfamily => 'Solaris', :release => '5.9',  :support => 'unsupported', },
       'solaris10' => { :kernel => 'Solaris', :osfamily => 'Solaris', :release => '5.10', :support => 'supported', },
       'solaris11' => { :kernel => 'Solaris', :osfamily => 'Solaris', :release => '5.11', :support => 'supported', },
